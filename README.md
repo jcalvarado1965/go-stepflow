@@ -184,4 +184,94 @@ In this case, the final `web-method` step will POST the array `[6, 10, 24]` to t
 The `race` step will activate the parent flow as soon as the first non-error child flow arrives. The parent flow's data will be set to the "winnning" childs flow data. All other child flows will be interrupted. If the previous flow is modified to use `race` instead of `join` in the 4th step, the final `web-method` will post either `6`, `10` or `24` to the `echo` endpoint.
 
 # conditional and select steps
-A `conditional` step acts like an `if` statement. If the flow data (which must be JSON deserializable) satisfies the given expression, the flow continues to the next step, with its data unchanged. If not, the flow is interrupted. 
+A `conditional` step acts like an `if` statement. If the flow data (which must be JSON deserializable) satisfies the given expression, the flow continues to the next step, with its data unchanged. If not, the flow is interrupted. Expressions are evaluated with [github.com/Knetic/govaluate](https://github.com/Knetic/govaluate). Expression variables are represented by jsonpath selectors and evaluated using [github.com/oliveagle/jsonpath](https://github.com/oliveagle/jsonpath). Because jsonpath variables are complex strings they generally need to be enclosed with []. If the jsonpath expression contains [] these need to be further escaped with \\. The following flow demonstrates the behavior of `conditional`:
+```json
+{
+   "id": "conditional-workflow",
+   "description": "Demo the conditional step",
+   "startAt": "array-constant",
+   "steps": [
+      {
+        "id": "array-constant",
+        "description": "sets the flow data to an object array",
+        "type": "constant",
+        "value": [
+          {"name": "joe", "age": 35},
+          {"name": "mark", "age": 26},
+          {"name": "mary", "age": 42}
+          ],
+        "next": "dist-arrays"
+      },
+      {
+        "id": "dist-arrays",
+        "description": "breakout sub objects",
+        "type": "distribute",
+        "next": "age-filter"
+      },
+      {
+        "id": "conditional",
+        "description": "filter by age",
+        "type": "conditional",
+        "condition": "[$.age] > 30",
+        "next": "echo"
+      },
+      {
+         "id": "echo",
+         "description": "call web method echo",
+         "type": "web-method",
+         "method": "POST",
+         "url": "http://localhost:8010/gcf-executor/us-central1/echo"
+       }
+   ]
+}
+```
+In this example the `echo` endpoint will be called twice, with content `{"name": "joe", "age": 35}` and `{"name": "mary", "age": 42}` respectively.
+
+The `select` step provides simple data manipulation (complex manipulation should be done as business logic via `web-method`). It uses the provided jsonpath expression to select a subset of the incoming data (which must be JSON deserializable). Below is the previous example, modified so that the `echo` endpoint receives only the `name` property.
+```json
+{
+   "id": "conditional-workflow",
+   "description": "Demo the conditional step",
+   "startAt": "array-constant",
+   "steps": [
+      {
+        "id": "array-constant",
+        "description": "sets the flow data to an object array",
+        "type": "constant",
+        "value": [
+          {"name": "joe", "age": 35},
+          {"name": "mark", "age": 26},
+          {"name": "mary", "age": 42}
+          ],
+        "next": "dist-arrays"
+      },
+      {
+        "id": "dist-arrays",
+        "description": "breakout sub objects",
+        "type": "distribute",
+        "next": "age-filter"
+      },
+      {
+        "id": "conditional",
+        "description": "filter by age",
+        "type": "conditional",
+        "condition": "[$.age] > 30",
+        "next": "select"
+      },
+      {
+        "id": "select",
+        "description": "select the name property",
+        "type": "select",
+        "selector": "$.name",
+        "next": "echo"
+      },
+      {
+         "id": "echo",
+         "description": "call web method echo",
+         "type": "web-method",
+         "method": "POST",
+         "url": "http://localhost:8010/gcf-executor/us-central1/echo"
+       }
+   ]
+}
+```
