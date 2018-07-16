@@ -1,0 +1,40 @@
+{
+   "id": "TestWorkflowSerialization",
+   "description": "testing serialization",
+   "startAt": "constant-1",
+   "steps": [
+      {
+        "id": "constant-1",
+        "description": "returns array of int",
+        "type": "constant",
+        "next": "dist-array",
+        "value": [[5],[7],[3],[9],[8],[4],[11],[13],[6]]
+      },
+      {
+        "id": "dist-array",
+        "description": "break out numbers",
+        "type": "distribute",
+        "next": "conditional"
+      },
+      {
+        "id": "conditional",
+        "description": "test number is greater than 5",
+        "type": "conditional",
+        "condition": "[$\\[0\\]] != 5",
+        "next": "racer"
+      },
+      {
+        "id": "racer",
+        "description": "should let one number through",
+        "type": "race",
+        "next": "echo"
+      },
+      {
+         "id": "echo",
+         "description": "call web method echo",
+         "type": "web-method",
+         "method": "POST",
+         "url": "http://localhost:8080/echo"
+       }
+ ]
+}

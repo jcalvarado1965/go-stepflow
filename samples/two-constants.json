@@ -1,0 +1,20 @@
+{
+   "id": "TwoConstants",
+   "description": "One constant step followed by another",
+   "startAt": "constant-1",
+   "steps": [
+      {
+        "id": "constant-1",
+        "description": "returns array of int",
+        "type": "constant",
+        "next": "constant-2",
+        "value": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+      {
+        "id": "constant-2",
+        "description": "returns an object",
+        "type": "constant",
+        "value": {"aNumber": 1.23, "aString": "foobar", "aBool": true}
+      }
+   ]
+}

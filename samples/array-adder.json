@@ -1,0 +1,21 @@
+{
+   "id": "TestWorkflowSerialization",
+   "description": "testing serialization",
+   "startAt": "constant-1",
+   "steps": [
+      {
+        "id": "constant-1",
+        "description": "returns array of int",
+        "type": "constant",
+        "next": "adder",
+        "value": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+      {
+         "id": "adder",
+         "description": "should add the ints",
+         "type": "web-method",
+         "method": "POST",
+         "url": "http://localhost:8080/adder"
+      }
+   ]
+}

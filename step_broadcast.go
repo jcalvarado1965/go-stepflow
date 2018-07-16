@@ -38,7 +38,7 @@ func (s *BroadcastStep) ResolveIDs(stepMap map[string]Step) error {
 func (s *BroadcastStep) Split(ctx context.Context, exec Executor, flow *Flow) (outflows []*Flow, split *FlowSplit, err error) {
 	split = &FlowSplit{
 		ID:            FlowSplitID(uuid.New().String()),
-		WorkflowRunID: flow.WorkflowRunID,
+		DataflowRunID: flow.DataflowRunID,
 		SplitStepID:   s.ID,
 		ParentFlowID:  flow.ID,
 		IndexType:     FlowSplitKeyIndex,
@@ -49,7 +49,7 @@ func (s *BroadcastStep) Split(ctx context.Context, exec Executor, flow *Flow) (o
 	for i, f := range s.ForwardTo {
 		outflow := &Flow{
 			ID:            FlowID(uuid.New().String()),
-			WorkflowRunID: flow.WorkflowRunID,
+			DataflowRunID: flow.DataflowRunID,
 			State:         FlowStateActive,
 			Data:          flow.Data,
 			ContentType:   flow.ContentType,

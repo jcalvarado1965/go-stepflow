@@ -1,0 +1,27 @@
+{
+    "id": "TestWorkflowSerialization",
+    "description": "testing serialization",
+    "startAt": "array-of-arrays",
+    "steps": [
+      {
+         "id": "array-of-arrays",
+         "description": "returns array of array of int",
+         "type": "constant",
+         "next": "dist-arrays",
+         "value": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+       },
+       {
+         "id": "dist-arrays",
+         "description": "breakout sub arrays",
+         "type": "distribute",
+         "next": "adder"
+       },
+       {
+          "id": "adder",
+          "description": "should add the ints",
+          "type": "web-method",
+          "method": "POST",
+          "url": "http://localhost:8080/adder"
+       }
+    ]
+ }

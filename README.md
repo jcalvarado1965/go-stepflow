@@ -220,7 +220,7 @@ A `conditional` step acts like an `if` statement. If the flow data (which must b
          "description": "call web method echo",
          "type": "web-method",
          "method": "POST",
-         "url": "http://localhost:8010/gcf-executor/us-central1/echo"
+         "url": "http://localhost:8080/echo"
        }
    ]
 }
@@ -270,7 +270,7 @@ The `select` step provides simple data manipulation (complex manipulation should
          "description": "call web method echo",
          "type": "web-method",
          "method": "POST",
-         "url": "http://localhost:8010/gcf-executor/us-central1/echo"
+         "url": "http://localhost:8080/echo"
        }
    ]
 }

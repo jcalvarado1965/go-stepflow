@@ -53,9 +53,9 @@ func (e *executor) Start(ctx context.Context, workflow *Dataflow) (*DataflowRun,
 
 	e.Logger.Debugf(ctx, "Dataflow %v started", *workflow)
 
-	wr := NewWorkflowRun(workflow)
+	wr := NewDataflowRun(workflow)
 
-	err := e.Storage.StoreWorkflowRun(ctx, wr)
+	err := e.Storage.StoreDataflowRun(ctx, wr)
 	if err != nil {
 		errs = append(errs, err)
 		return nil, errs
@@ -64,7 +64,7 @@ func (e *executor) Start(ctx context.Context, workflow *Dataflow) (*DataflowRun,
 	// create initial flow
 	flow := Flow{
 		ID:            FlowID(uuid.New().String()),
-		WorkflowRunID: (*wr).ID,
+		DataflowRunID: (*wr).ID,
 		NextStepID:    (*workflow).StartAt.GetID(),
 		State:         FlowStateActive,
 	}
@@ -99,9 +99,9 @@ func (e *executor) GetHTTPClientFactory() HTTPClientFactory {
 func (e *executor) handleFlow(ctx context.Context, flow *Flow) error {
 	var err error
 	var dfctx = context.WithValue(ctx, FlowContextKey, flow.ID)
-	dfctx = context.WithValue(dfctx, WorkflowRunContextKey, flow.WorkflowRunID)
+	dfctx = context.WithValue(dfctx, DataflowRunContextKey, flow.DataflowRunID)
 	e.Logger.Infof(dfctx, "Executor received flow %s", flow)
-	if run, ok := e.Storage.RetrieveWorkflowRuns(dfctx, []WorkflowRunID{flow.WorkflowRunID})[flow.WorkflowRunID]; ok {
+	if run, ok := e.Storage.RetrieveDataflowRuns(dfctx, []DataflowRunID{flow.DataflowRunID})[flow.DataflowRunID]; ok {
 		dfctx = context.WithValue(dfctx, StepContextKey, flow.NextStepID)
 		step := run.Dataflow.GetStep(flow.NextStepID)
 		if step == nil {
@@ -109,7 +109,7 @@ func (e *executor) handleFlow(ctx context.Context, flow *Flow) error {
 		} else {
 			if run.State != RunStateActive {
 				run.State = RunStateActive
-				e.Storage.StoreWorkflowRun(dfctx, run)
+				e.Storage.StoreDataflowRun(dfctx, run)
 			}
 			switch s := step.(type) {
 			case DoerStep:
@@ -179,9 +179,9 @@ func (e *executor) handleFlow(ctx context.Context, flow *Flow) error {
 // getting the siblings state, updating the parent flow and repeating if needed.
 // Flows are deleted on normal completion, so siblings are finished if
 // not found, or if all in error.
-func (e *executor) updateWorkflowState(ctx context.Context, run *DataflowRun, flow *Flow, step Step) error {
+func (e *executor) updateDataflowState(ctx context.Context, run *DataflowRun, flow *Flow, step Step) error {
 	currFlow := flow
-	isWorkflowError := false
+	isDataflowError := false
 
 	// if the current (finished) flow will reach a joining step, do not handle it here
 	// since the joining step needs to see the flow (e.g. to determine when all
@@ -219,7 +219,7 @@ func (e *executor) updateWorkflowState(ctx context.Context, run *DataflowRun, fl
 
 		e.GetLogger().Infof(ctx, "All children flows of %s are finished (%d with error)", split.ParentFlowID, totalError)
 		if totalError > 0 {
-			isWorkflowError = true
+			isDataflowError = true
 		}
 
 		// all siblings are finished, so update parent flow and repeat
@@ -246,7 +246,7 @@ func (e *executor) updateWorkflowState(ctx context.Context, run *DataflowRun, fl
 	}
 
 	// if we got this far the workflow is finished
-	if isWorkflowError {
+	if isDataflowError {
 		e.GetLogger().Warnf(ctx, "Dataflow %s completed with error", run.ID)
 		run.State = RunStateError
 	} else {
@@ -254,7 +254,7 @@ func (e *executor) updateWorkflowState(ctx context.Context, run *DataflowRun, fl
 		run.State = RunStateCompleted
 	}
 
-	return e.Storage.StoreWorkflowRun(ctx, run)
+	return e.Storage.StoreDataflowRun(ctx, run)
 }
 
 func (e *executor) advanceFlow(ctx context.Context, run *DataflowRun, flow *Flow, step Step) (err error) {
@@ -264,7 +264,7 @@ func (e *executor) advanceFlow(ctx context.Context, run *DataflowRun, flow *Flow
 		// as it should be treated as a non-error completion
 		err := e.Storage.StoreFlow(ctx, flow)
 		if err == nil {
-			err = e.updateWorkflowState(ctx, run, flow, step)
+			err = e.updateDataflowState(ctx, run, flow, step)
 		}
 		return err
 	}
@@ -281,7 +281,7 @@ func (e *executor) advanceFlow(ctx context.Context, run *DataflowRun, flow *Flow
 		if err = e.Storage.DeleteFlow(ctx, flow.ID); err != nil {
 			return err
 		}
-		err = e.updateWorkflowState(ctx, run, flow, step)
+		err = e.updateDataflowState(ctx, run, flow, step)
 	}
 
 	return err
@@ -307,5 +307,5 @@ func (e *executor) failFlow(ctx context.Context, run *DataflowRun, flow *Flow, s
 		return err
 	}
 
-	return e.updateWorkflowState(ctx, run, flow, step)
+	return e.updateDataflowState(ctx, run, flow, step)
 }

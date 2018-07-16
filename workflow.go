@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// const WorkflowRunKind = "DataflowRun"
+// const DataflowRunKind = "DataflowRun"
 
 // Dataflow defines a workflow
 type Dataflow struct {
@@ -33,19 +33,19 @@ func (w *Dataflow) GetStep(ID string) Step {
 	return nil
 }
 
-// WorkflowNoFn erases the marshaling functions to avoid recursion
-type WorkflowNoFn Dataflow
+// DataflowNoFn erases the marshaling functions to avoid recursion
+type DataflowNoFn Dataflow
 
-// WorkflowMarshaller is used for marshaling a workflow into JSON
-type WorkflowMarshaller struct {
-	WorkflowNoFn
+// DataflowMarshaller is used for marshaling a workflow into JSON
+type DataflowMarshaller struct {
+	DataflowNoFn
 	StepsJSON []json.RawMessage `json:"steps"`
 	StartID   string            `json:"startAt,omitempty"`
 }
 
 // MarshalJSON implements Marshaller for Dataflow
 func (w Dataflow) MarshalJSON() ([]byte, error) {
-	dfNoMar := WorkflowMarshaller{WorkflowNoFn: WorkflowNoFn(w)}
+	dfNoMar := DataflowMarshaller{DataflowNoFn: DataflowNoFn(w)}
 	// dfNoMar.ID = w.ID
 	// dfNoMar.Description = w.Description
 
@@ -66,7 +66,7 @@ func (w Dataflow) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements Unmarshaller for Dataflow
 func (w *Dataflow) UnmarshalJSON(bytes []byte) error {
-	var dfNoMar WorkflowMarshaller
+	var dfNoMar DataflowMarshaller
 	if err := json.Unmarshal(bytes, &dfNoMar); err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (w *Dataflow) UnmarshalJSON(bytes []byte) error {
 	}
 
 	dfNoMar.StepMap = stepMap
-	*w = Dataflow(dfNoMar.WorkflowNoFn)
+	*w = Dataflow(dfNoMar.DataflowNoFn)
 	return nil
 }
 
@@ -111,32 +111,32 @@ func (w Dataflow) String() string {
 		w.ID, w.Description, w.Steps, startAt)
 }
 
-// WorkflowRunID identifies a workflow run (generated UUID)
-type WorkflowRunID string
+// DataflowRunID identifies a workflow run (generated UUID)
+type DataflowRunID string
 
-// WorkflowRunState is the string type of workflow run states
-type WorkflowRunState string
+// DataflowRunState is the string type of workflow run states
+type DataflowRunState string
 
 // list of workflow run states
 const (
-	RunStateNew         = WorkflowRunState("New")
-	RunStateActive      = WorkflowRunState("Active")
-	RunStateInterrupted = WorkflowRunState("Interrupted")
-	RunStateCompleted   = WorkflowRunState("Completed")
-	RunStateError       = WorkflowRunState("Error")
+	RunStateNew         = DataflowRunState("New")
+	RunStateActive      = DataflowRunState("Active")
+	RunStateInterrupted = DataflowRunState("Interrupted")
+	RunStateCompleted   = DataflowRunState("Completed")
+	RunStateError       = DataflowRunState("Error")
 )
 
 // DataflowRun describes a running workflow
 type DataflowRun struct {
-	ID       WorkflowRunID
+	ID       DataflowRunID
 	Dataflow *Dataflow
-	State    WorkflowRunState
+	State    DataflowRunState
 }
 
-// NewWorkflowRun creates a run
-func NewWorkflowRun(df *Dataflow) *DataflowRun {
+// NewDataflowRun creates a run
+func NewDataflowRun(df *Dataflow) *DataflowRun {
 	return &DataflowRun{
-		ID:       WorkflowRunID(uuid.New().String()),
+		ID:       DataflowRunID(uuid.New().String()),
 		Dataflow: df,
 		State:    RunStateNew,
 	}
@@ -147,15 +147,15 @@ func NewWorkflowRun(df *Dataflow) *DataflowRun {
 	// }
 
 	// return &DataflowRun{
-	// 	WorkflowID: df.ID,
+	// 	DataflowID: df.ID,
 	// 	Dataflow:   rawJSON}, nil
 }
 
 // StoreRun creates the datastore entities for the run
 // func (w Dataflow) StoreRun(ctx context.Context) error {
-// 	wr, _ := NewWorkflowRun(&w)
+// 	wr, _ := NewDataflowRun(&w)
 // 	return datastore.RunInTransaction(ctx, func(tc xnc.Context) error {
-// 		wRunKey, err := datastore.Put(tc, datastore.NewIncompleteKey(tc, WorkflowRunKind, nil), wr)
+// 		wRunKey, err := datastore.Put(tc, datastore.NewIncompleteKey(tc, DataflowRunKind, nil), wr)
 // 		if err != nil {
 // 			return err
 // 		}
@@ -163,7 +163,7 @@ func NewWorkflowRun(df *Dataflow) *DataflowRun {
 // 		for _, step := range w.Steps {
 // 			stepRun := &StepRun{
 // 				StepID:        step.GetID(),
-// 				WorkflowRunID: wRunKey.IntID()}
+// 				DataflowRunID: wRunKey.IntID()}
 // 			key := stepRun.GetDatastoreKey(tc)
 // 			_, err = datastore.Put(tc, key, stepRun)
 // 			if err != nil {

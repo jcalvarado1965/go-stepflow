@@ -1,0 +1,33 @@
+{
+    "id": "TestWorkflowSerialization",
+    "description": "testing serialization",
+    "startAt": "array-of-arrays",
+    "steps": [
+      {
+         "id": "array-of-arrays",
+         "description": "returns array of array of int",
+         "type": "constant",
+         "next": "dist-arrays",
+         "value": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+       },
+       {
+         "id": "dist-arrays",
+         "description": "breakout sub arrays",
+         "type": "distribute",
+         "next": "joiner"
+       },
+       {
+          "id": "joiner",
+          "description": "should join arrays back",
+          "type": "join",
+          "next": "echo"
+        },
+        {
+           "id": "echo",
+           "description": "call web method echo",
+           "type": "web-method",
+           "method": "POST",
+           "url": "http://localhost:8080/echo"
+         }
+    ]
+ }

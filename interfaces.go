@@ -9,8 +9,8 @@ import (
 // FlowContextKeyType used to store flow id in context
 type FlowContextKeyType struct{}
 
-// WorkflowRunContextKeyType used to store workflow run id in context
-type WorkflowRunContextKeyType struct{}
+// DataflowRunContextKeyType used to store workflow run id in context
+type DataflowRunContextKeyType struct{}
 
 // StepContextKeyType used to store step ID in context
 type StepContextKeyType struct{}
@@ -18,7 +18,7 @@ type StepContextKeyType struct{}
 // Used to store info in context
 var (
 	FlowContextKey        = FlowContextKeyType{}
-	WorkflowRunContextKey = WorkflowRunContextKeyType{}
+	DataflowRunContextKey = DataflowRunContextKeyType{}
 	StepContextKey        = StepContextKeyType{}
 )
 
@@ -35,9 +35,9 @@ type Executor interface {
 
 // Storage is the interface implemented by external storage service
 type Storage interface {
-	StoreWorkflowRun(ctx context.Context, run *DataflowRun) error
-	RetrieveWorkflowRuns(ctx context.Context, keys []WorkflowRunID) map[WorkflowRunID]*DataflowRun
-	DeleteWorkflowRun(ctx context.Context, key WorkflowRunID) error
+	StoreDataflowRun(ctx context.Context, run *DataflowRun) error
+	RetrieveDataflowRuns(ctx context.Context, keys []DataflowRunID) map[DataflowRunID]*DataflowRun
+	DeleteDataflowRun(ctx context.Context, key DataflowRunID) error
 
 	StoreFlow(ctx context.Context, flow *Flow) error
 	RetrieveFlows(ctx context.Context, keys []FlowID) map[FlowID]*Flow

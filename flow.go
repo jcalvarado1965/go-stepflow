@@ -36,7 +36,7 @@ type FlowID string
 // FlowSplit holds information about an instance of a split flow
 type FlowSplit struct {
 	ID            FlowSplitID        // uuid
-	WorkflowRunID WorkflowRunID      // identifies the run instance
+	DataflowRunID DataflowRunID      // identifies the run instance
 	SplitStepID   string             // this would be a broadcast or distribute step
 	ParentFlowID  FlowID             // the flow that was split
 	IndexType     FlowSplitIndexType // the type of index used in the split
@@ -50,7 +50,7 @@ type FlowSplit struct {
 // Flows can merge in the Join and Race steps.
 type Flow struct {
 	ID             FlowID        // UUID
-	WorkflowRunID  WorkflowRunID // identifies the run instance
+	DataflowRunID  DataflowRunID // identifies the run instance
 	PreviousStepID string
 	NextStepID     string
 	State          FlowState
@@ -97,6 +97,6 @@ func (f *Flow) getSiblingFlows(ctx context.Context, exec Executor) ([]*Flow, *Fl
 }
 
 func (f *Flow) String() string {
-	return fmt.Sprintf("{ID: %s, WorkflowRunID: %s, PreviousStepID: %s, NextStepID: %s, State: %s, Message: %s, ContentType: %s, Splits: %v, SplitKey: %s, SplitIndex: %d}",
-		f.ID, f.WorkflowRunID, f.PreviousStepID, f.NextStepID, f.State, f.Message, f.ContentType, f.Splits, f.SplitKey, f.SplitIndex)
+	return fmt.Sprintf("{ID: %s, DataflowRunID: %s, PreviousStepID: %s, NextStepID: %s, State: %s, Message: %s, ContentType: %s, Splits: %v, SplitKey: %s, SplitIndex: %d}",
+		f.ID, f.DataflowRunID, f.PreviousStepID, f.NextStepID, f.State, f.Message, f.ContentType, f.Splits, f.SplitKey, f.SplitIndex)
 }

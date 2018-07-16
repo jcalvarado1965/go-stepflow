@@ -54,7 +54,7 @@ func (s *DistributeStep) Split(ctx context.Context, exec Executor, flow *Flow) (
 
 	split = &FlowSplit{
 		ID:            FlowSplitID(uuid.New().String()),
-		WorkflowRunID: flow.WorkflowRunID,
+		DataflowRunID: flow.DataflowRunID,
 		SplitStepID:   s.ID,
 		ParentFlowID:  flow.ID,
 	}
@@ -71,7 +71,7 @@ func (s *DistributeStep) Split(ctx context.Context, exec Executor, flow *Flow) (
 		for i, v := range messages {
 			outflow := &Flow{
 				ID:            FlowID(uuid.New().String()),
-				WorkflowRunID: flow.WorkflowRunID,
+				DataflowRunID: flow.DataflowRunID,
 				State:         FlowStateActive,
 				Data:          v,
 				ContentType:   "application/json",
@@ -91,7 +91,7 @@ func (s *DistributeStep) Split(ctx context.Context, exec Executor, flow *Flow) (
 		for k, v := range messageMap {
 			outflow := &Flow{
 				ID:            FlowID(uuid.New().String()),
-				WorkflowRunID: flow.WorkflowRunID,
+				DataflowRunID: flow.DataflowRunID,
 				State:         FlowStateActive,
 				Data:          v,
 				ContentType:   "application/json",
