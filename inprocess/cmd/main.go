@@ -60,7 +60,7 @@ func main() {
 		}
 	}
 
-	wg, _ := flowQueue.Stop(ctx)
+	wg, _ := flowQueue.(*inprocess.MemoryQueue).Stop(ctx)
 
 	if wg != nil {
 		logger.Debugf(ctx, "Waiting for queue to stop")

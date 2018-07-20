@@ -70,14 +70,16 @@ func (s *DistributeStep) Split(ctx context.Context, exec Executor, flow *Flow) (
 		}
 		for i, v := range messages {
 			outflow := &Flow{
-				ID:            FlowID(uuid.New().String()),
-				DataflowRunID: flow.DataflowRunID,
-				State:         FlowStateActive,
-				Data:          v,
-				ContentType:   "application/json",
-				Splits:        newSplits,
-				SplitIndex:    i,
-				NextStepID:    s.NextID,
+				FlowNoData: FlowNoData{
+					ID:            FlowID(uuid.New().String()),
+					DataflowRunID: flow.DataflowRunID,
+					State:         FlowStateActive,
+					ContentType:   "application/json",
+					Splits:        newSplits,
+					SplitIndex:    i,
+					NextStepID:    s.NextID,
+				},
+				Data: v,
 			}
 			split.FlowIDs = append(split.FlowIDs, outflow.ID)
 			outflows = append(outflows, outflow)
@@ -90,14 +92,16 @@ func (s *DistributeStep) Split(ctx context.Context, exec Executor, flow *Flow) (
 		}
 		for k, v := range messageMap {
 			outflow := &Flow{
-				ID:            FlowID(uuid.New().String()),
-				DataflowRunID: flow.DataflowRunID,
-				State:         FlowStateActive,
-				Data:          v,
-				ContentType:   "application/json",
-				Splits:        newSplits,
-				SplitKey:      k,
-				NextStepID:    s.NextID,
+				FlowNoData: FlowNoData{
+					ID:            FlowID(uuid.New().String()),
+					DataflowRunID: flow.DataflowRunID,
+					State:         FlowStateActive,
+					ContentType:   "application/json",
+					Splits:        newSplits,
+					SplitKey:      k,
+					NextStepID:    s.NextID,
+				},
+				Data: v,
 			}
 			split.FlowIDs = append(split.FlowIDs, outflow.ID)
 			outflows = append(outflows, outflow)

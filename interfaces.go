@@ -3,7 +3,6 @@ package stepflow
 import (
 	"context"
 	"net/http"
-	"sync"
 )
 
 // FlowContextKeyType used to store flow id in context
@@ -55,7 +54,6 @@ type Storage interface {
 type FlowQueue interface {
 	SetDequeueCb(func(ctx context.Context, flow *Flow) error)
 	Enqueue(ctx context.Context, flow *Flow) error
-	Stop(ctx context.Context) (*sync.WaitGroup, error)
 }
 
 // Logger is passed to other services for pluggable logging

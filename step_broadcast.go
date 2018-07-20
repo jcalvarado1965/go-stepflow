@@ -48,14 +48,16 @@ func (s *BroadcastStep) Split(ctx context.Context, exec Executor, flow *Flow) (o
 	newSplits = append(newSplits, split.ID)
 	for i, f := range s.ForwardTo {
 		outflow := &Flow{
-			ID:            FlowID(uuid.New().String()),
-			DataflowRunID: flow.DataflowRunID,
-			State:         FlowStateActive,
-			Data:          flow.Data,
-			ContentType:   flow.ContentType,
-			Splits:        newSplits,
-			SplitKey:      s.ForwardToIDs[i],
-			NextStepID:    f.GetID(),
+			FlowNoData: FlowNoData{
+				ID:            FlowID(uuid.New().String()),
+				DataflowRunID: flow.DataflowRunID,
+				State:         FlowStateActive,
+				ContentType:   flow.ContentType,
+				Splits:        newSplits,
+				SplitKey:      s.ForwardToIDs[i],
+				NextStepID:    f.GetID(),
+			},
+			Data: flow.Data,
 		}
 		split.FlowIDs = append(split.FlowIDs, outflow.ID)
 		outflows = append(outflows, outflow)

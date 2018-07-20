@@ -63,10 +63,12 @@ func (e *executor) Start(ctx context.Context, workflow *Dataflow) (*DataflowRun,
 
 	// create initial flow
 	flow := Flow{
-		ID:            FlowID(uuid.New().String()),
-		DataflowRunID: (*wr).ID,
-		NextStepID:    (*workflow).StartAt.GetID(),
-		State:         FlowStateActive,
+		FlowNoData: FlowNoData{
+			ID:            FlowID(uuid.New().String()),
+			DataflowRunID: (*wr).ID,
+			NextStepID:    (*workflow).StartAt.GetID(),
+			State:         FlowStateActive,
+		},
 	}
 
 	err = e.enqueueFlow(ctx, &flow)

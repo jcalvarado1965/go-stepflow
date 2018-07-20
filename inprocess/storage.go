@@ -16,7 +16,7 @@ type memoryStorage struct {
 	mu     sync.Mutex
 }
 
-const DataflowRunKind = "DataflowRun:"
+const dataflowRunKind = "DataflowRun:"
 const flowKind = "Flow:"
 const flowSplitKind = "FlowSplit:"
 
@@ -31,14 +31,14 @@ func NewMemoryStorage(logger stepflow.Logger) stepflow.Storage {
 }
 
 func (ms *memoryStorage) StoreDataflowRun(ctx context.Context, run *stepflow.DataflowRun) error {
-	ms.Cache.Set(DataflowRunKind+string(run.ID), run, cache.NoExpiration)
+	ms.Cache.Set(dataflowRunKind+string(run.ID), run, cache.NoExpiration)
 	return nil
 }
 
 func (ms *memoryStorage) RetrieveDataflowRuns(ctx context.Context, keys []stepflow.DataflowRunID) map[stepflow.DataflowRunID]*stepflow.DataflowRun {
 	runs := make(map[stepflow.DataflowRunID]*stepflow.DataflowRun)
 	for _, key := range keys {
-		if value, ok := ms.Cache.Get(DataflowRunKind + string(key)); ok {
+		if value, ok := ms.Cache.Get(dataflowRunKind + string(key)); ok {
 			runs[key] = value.(*stepflow.DataflowRun)
 		} else {
 			runs[key] = nil
@@ -48,7 +48,7 @@ func (ms *memoryStorage) RetrieveDataflowRuns(ctx context.Context, keys []stepfl
 }
 
 func (ms *memoryStorage) DeleteDataflowRun(ctx context.Context, key stepflow.DataflowRunID) error {
-	ms.Cache.Delete(DataflowRunKind + string(key))
+	ms.Cache.Delete(dataflowRunKind + string(key))
 	return nil
 }
 

@@ -8,7 +8,7 @@ import (
 	stepflow "github.com/jcalvarado1965/go-stepflow"
 )
 
-type memoryQueue struct {
+type MemoryQueue struct {
 	Logger    stepflow.Logger
 	Queue     chan *stepflow.Flow
 	IsStopped bool
@@ -19,7 +19,7 @@ type memoryQueue struct {
 
 // NewMemoryQueue creates a memory queue service
 func NewMemoryQueue(logger stepflow.Logger, numWorkers int) stepflow.FlowQueue {
-	mq := &memoryQueue{
+	mq := &MemoryQueue{
 		Logger:    logger,
 		Queue:     make(chan *stepflow.Flow, numWorkers),
 		DummyCtx:  context.Background(),
@@ -34,12 +34,12 @@ func NewMemoryQueue(logger stepflow.Logger, numWorkers int) stepflow.FlowQueue {
 	return mq
 }
 
-func (mq *memoryQueue) SetDequeueCb(cb func(ctx context.Context, flow *stepflow.Flow) error) {
+func (mq *MemoryQueue) SetDequeueCb(cb func(ctx context.Context, flow *stepflow.Flow) error) {
 	mq.DequeueCb = cb
 	mq.Logger.Debugf(mq.DummyCtx, "Dequeue callback set")
 }
 
-func (mq *memoryQueue) Enqueue(ctx context.Context, flow *stepflow.Flow) error {
+func (mq *MemoryQueue) Enqueue(ctx context.Context, flow *stepflow.Flow) error {
 	mq.Logger.Debugf(mq.DummyCtx, "Enqueueing flow %v", flow)
 	if mq.IsStopped {
 		mq.Logger.Errorf(mq.DummyCtx, "Enqueueing flow on stopped queue %v", flow)
@@ -50,7 +50,7 @@ func (mq *memoryQueue) Enqueue(ctx context.Context, flow *stepflow.Flow) error {
 	return nil
 }
 
-func (mq *memoryQueue) Stop(ctx context.Context) (*sync.WaitGroup, error) {
+func (mq *MemoryQueue) Stop(ctx context.Context) (*sync.WaitGroup, error) {
 	mq.Logger.Infof(mq.DummyCtx, "Stopping memory queue")
 	if mq.IsStopped {
 		return nil, errors.New("Queue already stopped")
@@ -61,7 +61,7 @@ func (mq *memoryQueue) Stop(ctx context.Context) (*sync.WaitGroup, error) {
 	return &mq.WaitGroup, nil
 }
 
-func (mq *memoryQueue) worker(workerID int) {
+func (mq *MemoryQueue) worker(workerID int) {
 	mq.Logger.Infof(mq.DummyCtx, "Worker %d: starting...", workerID)
 	for flow := range mq.Queue {
 		mq.Logger.Debugf(mq.DummyCtx, "Worker %d: dequeued flow %v", workerID, flow)
